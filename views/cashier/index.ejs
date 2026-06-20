@@ -49,7 +49,14 @@
             <% } %>
           </td>
           <td>
-            <button class="btn btn-primary btn-sm" onclick="openBalance(<%= agent.id %>, <%- JSON.stringify(agent.full_name) %>, <%= agent.expected_cash %>)">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              data-agent-id="<%= agent.id %>"
+              data-agent-name="<%= agent.full_name %>"
+              data-expected="<%= agent.expected_cash %>"
+              onclick="openBalance(this.dataset.agentId, this.dataset.agentName, this.dataset.expected)"
+            >
               <i class="fas fa-check"></i> Balance
             </button>
           </td>
