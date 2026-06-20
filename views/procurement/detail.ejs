@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-eye"></i> Procurement Details</h2>
+  <a href="/procurement" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Procurement Info</span></div>
+    <div class="card-body">
+      <table style="width:100%;font-size:14px">
+        <tr><td class="text-muted" style="padding:6px 0">Reference</td><td><strong><%= procurement.reference_number || 'PRO-'+procurement.id %></strong></td></tr>
+        <tr><td class="text-muted" style="padding:6px 0">Supplier</td><td><%= procurement.supplier_name || '—' %></td></tr>
+        <tr><td class="text-muted" style="padding:6px 0">Branch</td><td><%= procurement.branch_name %></td></tr>
+        <tr><td class="text-muted" style="padding:6px 0">Date</td><td><%= new Date(procurement.procurement_date).toLocaleDateString() %></td></tr>
+        <tr><td class="text-muted" style="padding:6px 0">Recorded By</td><td><%= procurement.recorded_by %></td></tr>
+        <tr><td class="text-muted" style="padding:6px 0">Total Cost</td><td><strong>UGX <%= Number(procurement.total_cost).toLocaleString() %></strong></td></tr>
+        <% if (procurement.notes) { %><tr><td class="text-muted" style="padding:6px 0">Notes</td><td><%= procurement.notes %></td></tr><% } %>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Items Received</span></div>
+    <div class="card-body" style="padding:0">
+      <table>
+        <thead><tr><th>Product</th><th>Qty</th><th>Unit Cost</th><th>Subtotal</th></tr></thead>
+        <tbody>
+        <% items.forEach(item => { %>
+        <tr>
+          <td><%= item.product_name %></td>
+          <td><%= item.quantity %></td>
+          <td>UGX <%= Number(item.unit_cost).toLocaleString() %></td>
+          <td>UGX <%= Number(item.subtotal).toLocaleString() %></td>
+        </tr>
+        <% }) %>
+        <tr style="background:#f8fafc;font-weight:700">
+          <td colspan="3" style="text-align:right;padding:10px">TOTAL</td>
+          <td style="padding:10px">UGX <%= Number(procurement.total_cost).toLocaleString() %></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

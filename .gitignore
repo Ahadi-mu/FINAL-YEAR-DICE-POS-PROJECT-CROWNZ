@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.log
+npm-debug.log*
+.DS_Store
+uploads/
+README.md
+config/schema.sql config/seed.js

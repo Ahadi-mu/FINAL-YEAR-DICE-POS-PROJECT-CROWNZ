@@ -1,0 +1,131 @@
+<%- include('../partials/header') %>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-cash-register"></i></div>
+    <div>
+      <div class="stat-value">UGX <%= Number(dailySales.total).toLocaleString() %></div>
+      <div class="stat-label">Today's Sales (<%= dailySales.count %> transactions)</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-boxes"></i></div>
+    <div>
+      <div class="stat-value"><%= inventory.total_products || 0 %></div>
+      <div class="stat-label">Total Products</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon warning"><i class="fas fa-exclamation-triangle"></i></div>
+    <div>
+      <div class="stat-value" style="color:var(--warning)"><%= inventory.low_stock || 0 %></div>
+      <div class="stat-label">Low Stock Items</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon red"><i class="fas fa-ban"></i></div>
+    <div>
+      <div class="stat-value" style="color:var(--danger)"><%= inventory.out_of_stock || 0 %></div>
+      <div class="stat-label">Out of Stock</div>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <!-- Low Stock Alerts -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title"><i class="fas fa-bell" style="color:var(--warning)"></i> Low Stock Alerts</span>
+      <a href="/notifications/alerts" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    <div class="card-body" style="padding:0">
+      <% if (lowStockItems.length) { %>
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>Product</th><th>Stock</th><th>Reorder Level</th></tr></thead>
+          <tbody>
+          <% lowStockItems.forEach(item => { %>
+          <tr>
+            <td><%= item.product_name %></td>
+            <td>
+              <% if (item.quantity_available === 0) { %>
+                <span class="badge badge-danger">Out of Stock</span>
+              <% } else { %>
+                <span class="badge badge-warning"><%= item.quantity_available %></span>
+              <% } %>
+            </td>
+            <td><%= item.reorder_level %></td>
+          </tr>
+          <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } else { %>
+      <div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success)"></i><p>All stock levels are healthy!</p></div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Cashier Summary -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title"><i class="fas fa-users"></i> Today's Cashier Summary</span>
+      <a href="/cashier" class="btn btn-outline btn-sm">Balance</a>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>Agent</th><th>Sales</th><th>Amount</th></tr></thead>
+          <tbody>
+          <% cashierSummary.forEach(c => { %>
+          <tr>
+            <td><%= c.full_name %></td>
+            <td><%= c.sale_count %></td>
+            <td>UGX <%= Number(c.total_sales).toLocaleString() %></td>
+          </tr>
+          <% }) %>
+          <% if (!cashierSummary.length) { %>
+          <tr><td colspan="3" class="text-muted" style="text-align:center;padding:20px">No sales agents found</td></tr>
+          <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Procurements -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <span class="card-title"><i class="fas fa-clipboard-list"></i> Recent Procurements</span>
+    <a href="/procurement" class="btn btn-outline btn-sm">View All</a>
+  </div>
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead><tr><th>Reference</th><th>Supplier</th><th>Date</th><th>Total Cost</th></tr></thead>
+        <tbody>
+        <% recentProcurements.forEach(p => { %>
+        <tr>
+          <td><a href="/procurement/<%= p.id %>"><%= p.reference_number || '#'+p.id %></a></td>
+          <td><%= p.supplier_name || '—' %></td>
+          <td><%= new Date(p.procurement_date).toLocaleDateString() %></td>
+          <td>UGX <%= Number(p.total_cost).toLocaleString() %></td>
+        </tr>
+        <% }) %>
+        <% if (!recentProcurements.length) { %><tr><td colspan="4" class="text-muted" style="text-align:center;padding:20px">No procurements yet</td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+  <a href="/sales/pos" class="btn btn-primary"><i class="fas fa-cash-register"></i> Open POS</a>
+  <a href="/procurement/create" class="btn btn-success"><i class="fas fa-plus"></i> New Procurement</a>
+  <a href="/reports/daily-sales" class="btn btn-outline"><i class="fas fa-chart-bar"></i> Daily Report</a>
+  <a href="/inventory" class="btn btn-outline"><i class="fas fa-warehouse"></i> Inventory</a>
+<%- include('../partials/footer') %>
+</div>
+
+

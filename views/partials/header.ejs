@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> | CSRMS</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <i class="fas fa-store"></i>
+    <span>Crown Stores</span>
+  </div>
+  <div class="sidebar-subtitle">CSRMS</div>
+
+  <nav class="sidebar-nav">
+    <a href="/dashboard" class="nav-item <%= title.includes('Dashboard') ? 'active' : '' %>">
+      <i class="fas fa-tachometer-alt"></i> Dashboard
+    </a>
+
+    <% if (user && user.role !== 'sales_agent') { %>
+    <div class="nav-section">Catalogue</div>
+    <a href="/categories" class="nav-item <%= title.includes('Categor') ? 'active' : '' %>">
+      <i class="fas fa-tags"></i> Categories
+    </a>
+    <a href="/products" class="nav-item <%= title.includes('Product') ? 'active' : '' %>">
+      <i class="fas fa-box"></i> Products
+    </a>
+    <a href="/suppliers" class="nav-item <%= title.includes('Supplier') ? 'active' : '' %>">
+      <i class="fas fa-truck"></i> Suppliers
+    </a>
+    <% } %>
+
+    <% if (user && (user.role === 'manager' || user.role === 'director')) { %>
+    <div class="nav-section">Operations</div>
+    <a href="/procurement" class="nav-item <%= title.includes('Procurement') ? 'active' : '' %>">
+      <i class="fas fa-clipboard-list"></i> Procurement
+    </a>
+    <a href="/inventory" class="nav-item <%= title.includes('Inventory') ? 'active' : '' %>">
+      <i class="fas fa-warehouse"></i> Inventory
+    </a>
+    <% } %>
+
+    <% if (user && user.role !== 'director') { %>
+    <div class="nav-section">Sales</div>
+    <a href="/sales/pos" class="nav-item <%= title.includes('Point of Sale') ? 'active' : '' %>">
+      <i class="fas fa-cash-register"></i> Point of Sale
+    </a>
+    <a href="/sales/history" class="nav-item <%= title.includes('Sales History') ? 'active' : '' %>">
+      <i class="fas fa-history"></i> Sales History
+    </a>
+    <% } %>
+
+    <% if (user && user.role === 'manager') { %>
+    <a href="/cashier" class="nav-item <%= title.includes('Cashier') ? 'active' : '' %>">
+      <i class="fas fa-balance-scale"></i> Cashier Balancing
+    </a>
+    <% } %>
+
+    <% if (user && user.role !== 'sales_agent') { %>
+    <div class="nav-section">Reports</div>
+    <a href="/reports/daily-sales" class="nav-item">
+      <i class="fas fa-chart-bar"></i> Daily Sales
+    </a>
+    <a href="/reports/inventory" class="nav-item">
+      <i class="fas fa-chart-pie"></i> Inventory Report
+    </a>
+    <a href="/reports/procurement" class="nav-item">
+      <i class="fas fa-file-invoice"></i> Procurement Report
+    </a>
+    <% if (user.role === 'director') { %>
+    <a href="/reports/company" class="nav-item">
+      <i class="fas fa-globe"></i> Company Performance
+    </a>
+    <% } %>
+    <% } %>
+
+    <% if (user && user.role === 'director') { %>
+    <div class="nav-section">Administration</div>
+    <a href="/users" class="nav-item <%= title.includes('User') ? 'active' : '' %>">
+      <i class="fas fa-users"></i> Users
+    </a>
+    <a href="/branches" class="nav-item <%= title.includes('Branch') ? 'active' : '' %>">
+      <i class="fas fa-building"></i> Branches
+    </a>
+    <a href="/audit-logs" class="nav-item <%= title.includes('Audit') ? 'active' : '' %>">
+      <i class="fas fa-shield-alt"></i> Audit Logs
+    </a>
+    <a href="/maintenance" class="nav-item <%= title.includes('Maintenance') ? 'active' : '' %>">
+      <i class="fas fa-cogs"></i> Maintenance
+    </a>
+    <% } %>
+
+    <% if (user && user.role === 'manager') { %>
+    <div class="nav-section">Alerts</div>
+    <a href="/notifications/alerts" class="nav-item">
+      <i class="fas fa-bell"></i> Stock Alerts
+    </a>
+    <% } %>
+
+    <div class="nav-section">Support</div>
+    <a href="/bug-report" class="nav-item">
+      <i class="fas fa-bug"></i> Report a Bug
+    </a>
+  </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="main-content">
+  <!-- Top Bar -->
+  <header class="topbar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="topbar-title"><%= title %></div>
+    <div class="topbar-right">
+      <% if (user) { %>
+      <span class="role-badge role-<%= user.role %>">
+        <%= user.role === 'sales_agent' ? 'Sales Agent' : user.role === 'manager' ? 'Manager' : 'Director' %>
+      </span>
+      <span class="user-name"><i class="fas fa-user-circle"></i> <%= user.full_name %></span>
+      <% if (user.branch_name) { %><span class="branch-tag"><i class="fas fa-building"></i> <%= user.branch_name %></span><% } %>
+      <a href="/auth/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <% } %>
+    </div>
+  </header>
+
+  <!-- Flash Messages -->
+  <% if (success && success.length) { %>
+  <div class="alert alert-success"><i class="fas fa-check-circle"></i> <%= success[0] %></div>
+  <% } %>
+  <% if (error && error.length) { %>
+  <div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i> <%= error[0] %></div>
+  <% } %>
+
+  <div class="page-content">

@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-truck"></i> Suppliers</h2>
+  <button class="btn btn-primary" onclick="document.getElementById('createModal').style.display='flex'">
+    <i class="fas fa-plus"></i> Add Supplier
+  </button>
+</div>
+
+<div class="card">
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead><tr><th>Supplier Name</th><th>Contact Person</th><th>Phone</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+        <% suppliers.forEach(s => { %>
+        <tr>
+          <td><strong><%= s.supplier_name %></strong></td>
+          <td><%= s.contact_person || '—' %></td>
+          <td><%= s.phone || '—' %></td>
+          <td><%= s.email || '—' %></td>
+          <td><span class="badge <%= s.status === 'active' ? 'badge-success' : 'badge-danger' %>"><%= s.status %></span></td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick='openEdit(<%- JSON.stringify(s) %>)'><i class="fas fa-edit"></i></button>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (!suppliers.length) { %><tr><td colspan="6"><div class="empty-state"><i class="fas fa-truck"></i><p>No suppliers yet</p></div></td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Create Modal -->
+<div id="createModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:28px;width:500px;max-width:95vw">
+    <h3 style="margin-bottom:16px">Add Supplier</h3>
+    <form action="/suppliers/create" method="POST">
+      <div class="form-row">
+        <div class="form-group"><label>Supplier Name *</label><input type="text" name="supplier_name" required /></div>
+        <div class="form-group"><label>Contact Person</label><input type="text" name="contact_person" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone</label><input type="text" name="phone" /></div>
+        <div class="form-group"><label>Email</label><input type="email" name="email" /></div>
+      </div>
+      <div class="form-group"><label>Address</label><textarea name="address" rows="2"></textarea></div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Add</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('createModal').style.display='none'">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:28px;width:500px;max-width:95vw">
+    <h3 style="margin-bottom:16px">Edit Supplier</h3>
+    <form id="editForm" method="POST">
+      <div class="form-row">
+        <div class="form-group"><label>Supplier Name *</label><input type="text" name="supplier_name" id="eName" required /></div>
+        <div class="form-group"><label>Contact Person</label><input type="text" name="contact_person" id="eContact" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone</label><input type="text" name="phone" id="ePhone" /></div>
+        <div class="form-group"><label>Email</label><input type="email" name="email" id="eEmail" /></div>
+      </div>
+      <div class="form-group"><label>Address</label><textarea name="address" id="eAddr" rows="2"></textarea></div>
+      <div class="form-group"><label>Status</label><select name="status" id="eStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('editModal').style.display='none'">Cancel</button>
+      </div>
+    </form>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+<script>
+function openEdit(s) {
+  document.getElementById('eName').value = s.supplier_name;
+  document.getElementById('eContact').value = s.contact_person || '';
+  document.getElementById('ePhone').value = s.phone || '';
+  document.getElementById('eEmail').value = s.email || '';
+  document.getElementById('eAddr').value = s.address || '';
+  document.getElementById('eStatus').value = s.status;
+  document.getElementById('editForm').action = `/suppliers/edit/${s.id}`;
+  document.getElementById('editModal').style.display = 'flex';
+}
+</script>
+
+

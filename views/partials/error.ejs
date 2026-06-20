@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server Error | CSRMS</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)">
+  <div style="text-align:center;padding:40px">
+    <div style="font-size:64px;color:var(--danger);margin-bottom:16px">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <div style="font-size:72px;font-weight:800;color:var(--text);line-height:1">500</div>
+    <div style="font-size:20px;font-weight:600;margin:12px 0 8px;color:var(--text)">Server Error</div>
+    <div style="color:var(--text-muted);margin-bottom:8px">
+      Something went wrong on our end. Please try again.
+    </div>
+    <% if (message && process.env.NODE_ENV === 'development') { %>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius);padding:12px;margin-bottom:20px;font-size:13px;color:var(--danger);font-family:monospace;text-align:left;max-width:500px">
+      <%= message %>
+    </div>
+    <% } %>
+    <div style="display:flex;gap:12px;justify-content:center">
+      <a href="/dashboard" class="btn btn-primary">
+        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+      </a>
+      <a href="javascript:history.back()" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Go Back
+      </a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

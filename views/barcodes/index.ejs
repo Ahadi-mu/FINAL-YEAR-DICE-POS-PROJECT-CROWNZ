@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-barcode"></i> Barcodes — <%= product.product_name %></h2>
+  <a href="/products" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Products</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px">
+  <!-- Add Barcode -->
+  <% if (user.role === 'manager' || user.role === 'director') { %>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Add Barcode</span></div>
+    <div class="card-body">
+      <form action="/products/<%= product.id %>/barcodes" method="POST">
+        <div class="form-group">
+          <label>Barcode Value *</label>
+          <input type="text" name="barcode_value" placeholder="Scan or type barcode..." required autofocus />
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Barcode</button>
+      </form>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Existing Barcodes -->
+  <div class="card">
+    <div class="card-header"><span class="card-title">Existing Barcodes (<%= barcodes.length %>)</span></div>
+    <div class="card-body" style="padding:0">
+      <% if (barcodes.length) { %>
+      <table>
+        <thead><tr><th>Barcode</th><th>Added</th><th></th></tr></thead>
+        <tbody>
+        <% barcodes.forEach(b => { %>
+        <tr>
+          <td style="font-family:monospace;font-size:15px"><%= b.barcode_value %></td>
+          <td class="text-muted"><%= new Date(b.created_at).toLocaleDateString() %></td>
+          <td>
+            <% if (user.role === 'manager' || user.role === 'director') { %>
+            <form action="/barcodes/delete/<%= b.id %>" method="POST" onsubmit="return confirm('Remove this barcode?')">
+              <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+            </form>
+            <% } %>
+          </td>
+        </tr>
+        <% }) %>
+        </tbody>
+      </table>
+      <% } else { %>
+      <div class="empty-state"><i class="fas fa-barcode"></i><p>No barcodes yet</p></div>
+      <% } %>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+

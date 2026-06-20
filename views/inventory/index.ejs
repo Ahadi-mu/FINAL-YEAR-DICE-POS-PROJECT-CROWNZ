@@ -1,0 +1,80 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-warehouse"></i> Inventory</h2>
+  <div class="btn-group">
+    <a href="/inventory/movements" class="btn btn-outline"><i class="fas fa-history"></i> Movement History</a>
+    <a href="/reports/export/inventory-excel" class="btn btn-success"><i class="fas fa-file-excel"></i> Export Excel</a>
+  </div>
+</div>
+
+<form class="filters-bar" method="GET">
+  <div class="form-group">
+    <label>Search</label>
+    <input type="text" name="search" value="<%= filters.search || '' %>" placeholder="Product name..." />
+  </div>
+  <div class="form-group">
+    <label>Category</label>
+    <select name="category_id">
+      <option value="">All Categories</option>
+      <% categories.forEach(c => { %>
+      <option value="<%= c.id %>" <%= filters.category_id == c.id ? 'selected' : '' %>><%= c.category_name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Stock Status</label>
+    <select name="stock_status">
+      <option value="">All</option>
+      <option value="low" <%= filters.stock_status === 'low' ? 'selected' : '' %>>Low Stock</option>
+      <option value="out" <%= filters.stock_status === 'out' ? 'selected' : '' %>>Out of Stock</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+  <a href="/inventory" class="btn btn-secondary">Clear</a>
+</form>
+
+<div class="card">
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Product</th><th>Category</th><th>Available</th><th>Reorder Level</th><th>Cost Price</th><th>Selling Price</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+        <% inventory.forEach(p => { %>
+        <tr>
+          <td><strong><%= p.product_name %></strong></td>
+          <td><%= p.category_name %></td>
+          <td>
+            <strong class="<%= p.quantity_available === 0 ? 'text-danger' : p.stock_status === 'low_stock' ? 'text-warning' : 'text-success' %>">
+              <%= p.quantity_available || 0 %>
+            </strong>
+            <%= p.unit %>
+          </td>
+          <td><%= p.reorder_level %></td>
+          <td>UGX <%= Number(p.cost_price).toLocaleString() %></td>
+          <td>UGX <%= Number(p.selling_price).toLocaleString() %></td>
+          <td>
+            <% if (p.stock_status === 'out_of_stock') { %>
+              <span class="badge badge-danger">Out of Stock</span>
+            <% } else if (p.stock_status === 'low_stock') { %>
+              <span class="badge badge-warning">Low Stock</span>
+            <% } else { %>
+              <span class="badge badge-success">In Stock</span>
+            <% } %>
+          </td>
+          <td>
+            <a href="/inventory/adjust/<%= p.id %>" class="btn btn-outline btn-sm"><i class="fas fa-sliders-h"></i> Adjust</a>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (!inventory.length) { %><tr><td colspan="8"><div class="empty-state"><i class="fas fa-warehouse"></i><p>No inventory records</p></div></td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

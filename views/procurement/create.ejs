@@ -1,0 +1,137 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-plus"></i> Record Procurement</h2>
+  <a href="/procurement" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form id="procForm" action="/procurement/create" method="POST">
+      <input type="hidden" name="items" id="itemsInput" />
+
+      <div class="form-row">
+        <% if (user.role === 'director') { %>
+        <div class="form-group">
+          <label>Branch <span style="color:var(--danger)">*</span></label>
+          <select name="branch_id" required>
+            <option value="">-- Select Branch --</option>
+            <% branches.forEach(b => { %>
+            <option value="<%= b.id %>"><%= b.branch_name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <% } %>
+        <div class="form-group">
+          <label>Supplier</label>
+          <select name="supplier_id">
+            <option value="">-- Select Supplier (optional) --</option>
+            <% suppliers.forEach(s => { %>
+            <option value="<%= s.id %>"><%= s.supplier_name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Reference Number</label>
+          <input type="text" name="reference_number" placeholder="e.g. Invoice #12345" />
+        </div>
+        <div class="form-group">
+          <label>Procurement Date *</label>
+          <input type="date" name="procurement_date" value="<%= new Date().toISOString().split('T')[0] %>" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea name="notes" rows="2" placeholder="Additional notes..."></textarea>
+      </div>
+
+      <!-- Items -->
+      <div style="margin-top:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <strong><i class="fas fa-list"></i> Procurement Items</strong>
+          <button type="button" class="btn btn-outline btn-sm" onclick="addRow()"><i class="fas fa-plus"></i> Add Item</button>
+        </div>
+        <div class="table-responsive">
+          <table id="itemsTable">
+            <thead>
+              <tr><th style="width:40%">Product *</th><th>Quantity *</th><th>Unit Cost (UGX) *</th><th>Subtotal</th><th></th></tr>
+            </thead>
+            <tbody id="itemsBody"></tbody>
+          </table>
+        </div>
+        <div style="text-align:right;margin-top:10px;font-size:16px;font-weight:700">
+          Grand Total: UGX <span id="grandTotal">0</span>
+        </div>
+      </div>
+
+      <div class="btn-group" style="margin-top:20px">
+        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Procurement</button>
+        <a href="/procurement" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+<script>
+const products = <%- JSON.stringify(products) %>;
+let rowCount = 0;
+
+function addRow() {
+  rowCount++;
+  const id = `row_${rowCount}`;
+  const opts = products.map(p => `<option value="${p.id}" data-cost="${p.cost_price}">${p.product_name}</option>`).join('');
+  const tr = document.createElement('tr');
+  tr.id = id;
+  tr.innerHTML = `
+    <td><select class="prod-select" onchange="updateSubtotal('${id}')" required><option value="">-- Select Product --</option>${opts}</select></td>
+    <td><input type="number" class="qty-input" min="1" value="1" onchange="updateSubtotal('${id}')" required style="width:80px" /></td>
+    <td><input type="number" class="cost-input" min="0" step="0.01" value="" onchange="updateSubtotal('${id}')" required placeholder="0" style="width:120px" /></td>
+    <td class="subtotal" style="font-weight:600">UGX 0</td>
+    <td><button type="button" class="btn btn-danger btn-sm" onclick="document.getElementById('${id}').remove();calcGrand()"><i class="fas fa-trash"></i></button></td>
+  `;
+  document.getElementById('itemsBody').appendChild(tr);
+  tr.querySelector('.prod-select').addEventListener('change', function() {
+    const opt = this.options[this.selectedIndex];
+    if (opt.dataset.cost) tr.querySelector('.cost-input').value = opt.dataset.cost;
+    updateSubtotal(id);
+  });
+}
+
+function updateSubtotal(rowId) {
+  const row = document.getElementById(rowId);
+  const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+  const cost = parseFloat(row.querySelector('.cost-input').value) || 0;
+  row.querySelector('.subtotal').textContent = 'UGX ' + (qty * cost).toLocaleString();
+  calcGrand();
+}
+
+function calcGrand() {
+  let total = 0;
+  document.querySelectorAll('#itemsBody tr').forEach(row => {
+    const qty = parseFloat(row.querySelector('.qty-input')?.value) || 0;
+    const cost = parseFloat(row.querySelector('.cost-input')?.value) || 0;
+    total += qty * cost;
+  });
+  document.getElementById('grandTotal').textContent = total.toLocaleString();
+}
+
+document.getElementById('procForm').addEventListener('submit', function(e) {
+  const rows = document.querySelectorAll('#itemsBody tr');
+  if (!rows.length) { e.preventDefault(); alert('Please add at least one item.'); return; }
+  const items = [];
+  for (const row of rows) {
+    const product_id = row.querySelector('.prod-select').value;
+    const quantity = parseInt(row.querySelector('.qty-input').value);
+    const unit_cost = parseFloat(row.querySelector('.cost-input').value);
+    if (!product_id || !quantity || !unit_cost) { e.preventDefault(); alert('Please fill all item fields.'); return; }
+    items.push({ product_id, quantity, unit_cost });
+  }
+  document.getElementById('itemsInput').value = JSON.stringify(items);
+});
+
+addRow();
+</script>
+
+

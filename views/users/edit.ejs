@@ -1,0 +1,72 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-edit"></i> Edit User</h2>
+  <a href="/users" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="card" style="max-width:600px">
+  <div class="card-body">
+    <form action="/users/edit/<%= editUser.id %>" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" name="full_name" value="<%= editUser.full_name %>" required />
+        </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" value="<%= editUser.username %>" disabled style="background:#f3f4f6" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" name="email" value="<%= editUser.email %>" required />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Role *</label>
+          <select name="role" required onchange="toggleBranch(this.value)">
+            <% ['director','manager','sales_agent'].forEach(r => { %>
+            <option value="<%= r %>" <%= editUser.role === r ? 'selected' : '' %>><%= r.replace('_',' ') %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Branch</label>
+          <select name="branch_id">
+            <option value="">— None —</option>
+            <% branches.forEach(b => { %>
+            <option value="<%= b.id %>" <%= editUser.branch_id === b.id ? 'selected' : '' %>><%= b.branch_name %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status">
+            <option value="active" <%= editUser.status === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="inactive" <%= editUser.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>New Password <span class="text-muted">(leave blank to keep current)</span></label>
+          <input type="password" name="password" minlength="6" placeholder="New password..." />
+        </div>
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update User</button>
+        <a href="/users" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+<%- include('../partials/footer') %>
+</div>
+
+<script>
+function toggleBranch(role) {
+  document.querySelector('[name="branch_id"]').required = role !== 'director';
+}
+</script>
+
+

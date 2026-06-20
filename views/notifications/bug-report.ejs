@@ -1,0 +1,64 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-bug"></i> Report a Bug</h2>
+</div>
+
+<div class="card" style="max-width:600px">
+  <div class="card-header">
+    <span class="card-title">Submit Bug Report</span>
+  </div>
+  <div class="card-body">
+    <p class="text-muted" style="margin-bottom:20px;font-size:13px">
+      Found a bug or issue? Describe it below and we'll investigate. Your report will be sent to the system administrator.
+    </p>
+    <form action="/bug-report" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Module / Area *</label>
+          <select name="module" required>
+            <option value="">-- Select Module --</option>
+            <option>Authentication</option>
+            <option>Dashboard</option>
+            <option>Products</option>
+            <option>Categories</option>
+            <option>Inventory</option>
+            <option>Procurement</option>
+            <option>Sales / POS</option>
+            <option>Receipts</option>
+            <option>Reports</option>
+            <option>Cashier Balancing</option>
+            <option>Notifications</option>
+            <option>User Management</option>
+            <option>Branches</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Severity *</label>
+          <select name="severity" required>
+            <option value="low">Low — Minor issue</option>
+            <option value="medium" selected>Medium — Some functionality affected</option>
+            <option value="high">High — Major functionality broken</option>
+            <option value="critical">Critical — System unusable</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea name="description" rows="5" required placeholder="Describe the bug in detail. Include what you were doing, what happened, and what you expected to happen."></textarea>
+      </div>
+      <div style="background:#f8fafc;border-radius:var(--radius);padding:12px;margin-bottom:16px;font-size:12px;color:var(--text-muted)">
+        <i class="fas fa-info-circle"></i>
+        Reported by: <strong><%= user.full_name %></strong> (<%= user.email %>) on <%= new Date().toLocaleDateString() %>
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Report</button>
+        <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

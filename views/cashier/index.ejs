@@ -1,0 +1,114 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-balance-scale"></i> Cashier Balancing</h2>
+  <form method="GET" style="display:flex;gap:8px;align-items:center">
+    <input type="date" name="date" value="<%= date %>" style="padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius)" />
+    <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-calendar"></i> View Date</button>
+  </form>
+</div>
+
+<div style="margin-bottom:12px;color:var(--text-muted)">
+  Balancing for: <strong><%= new Date(date).toLocaleDateString('en-UG', { weekday:'long', year:'numeric', month:'long', day:'numeric' }) %></strong>
+</div>
+
+<div class="card">
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Sales Agent</th><th>Sales Count</th><th>Expected Cash</th><th>Submitted Cash</th><th>Variance</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+        <% agents.forEach(agent => { %>
+        <tr>
+          <td><strong><%= agent.full_name %></strong></td>
+          <td><%= agent.sale_count %></td>
+          <td>UGX <%= Number(agent.expected_cash).toLocaleString() %></td>
+          <td>
+            <% if (agent.submitted_cash != null) { %>
+              UGX <%= Number(agent.submitted_cash).toLocaleString() %>
+            <% } else { %>
+              <span class="text-muted">Not submitted</span>
+            <% } %>
+          </td>
+          <td>
+            <% if (agent.variance != null) { %>
+              <span class="<%= agent.variance >= 0 ? 'text-success' : 'text-danger' %>">
+                <%= agent.variance >= 0 ? '+' : '' %>UGX <%= Number(agent.variance).toLocaleString() %>
+              </span>
+            <% } else { %>—<% } %>
+          </td>
+          <td>
+            <% if (agent.balance_status) { %>
+              <span class="badge <%= agent.balance_status === 'approved' ? 'badge-success' : agent.balance_status === 'flagged' ? 'badge-danger' : 'badge-warning' %>">
+                <%= agent.balance_status %>
+              </span>
+            <% } else { %>
+              <span class="badge badge-secondary">Pending</span>
+            <% } %>
+          </td>
+          <td>
+            <button class="btn btn-primary btn-sm" onclick="openBalance(<%= agent.id %>, <%- JSON.stringify(agent.full_name) %>, <%= agent.expected_cash %>)">
+              <i class="fas fa-check"></i> Balance
+            </button>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (!agents.length) { %><tr><td colspan="7"><div class="empty-state"><i class="fas fa-users"></i><p>No sales agents found for this branch</p></div></td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Balance Modal -->
+<div id="balanceModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:28px;width:440px;max-width:95vw">
+    <h3 style="margin-bottom:4px">Record Cashier Balance</h3>
+    <div id="agentNameLabel" style="color:var(--text-muted);margin-bottom:16px;font-size:13px"></div>
+    <form action="/cashier/approve" method="POST">
+      <input type="hidden" name="agent_id" id="bAgentId" />
+      <input type="hidden" name="balance_date" value="<%= date %>" />
+      <div class="form-group">
+        <label>Expected Cash (UGX)</label>
+        <input type="number" name="expected_cash" id="bExpected" readonly style="background:#f3f4f6;font-weight:700" />
+      </div>
+      <div class="form-group">
+        <label>Cash Submitted by Agent (UGX) *</label>
+        <input type="number" name="submitted_cash" id="bSubmitted" required min="0" step="100" oninput="calcVariance()" />
+      </div>
+      <div id="varianceDisplay" style="font-size:14px;font-weight:600;margin-bottom:12px"></div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea name="notes" rows="2" placeholder="Any remarks or explanations..."></textarea>
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Approve Balance</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('balanceModal').style.display='none'">Cancel</button>
+      </div>
+    </form>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+<script>
+function openBalance(agentId, name, expected) {
+  document.getElementById('bAgentId').value = agentId;
+  document.getElementById('bExpected').value = expected;
+  document.getElementById('agentNameLabel').textContent = `Agent: ${name}`;
+  document.getElementById('bSubmitted').value = '';
+  document.getElementById('varianceDisplay').textContent = '';
+  document.getElementById('balanceModal').style.display = 'flex';
+}
+function calcVariance() {
+  const exp = parseFloat(document.getElementById('bExpected').value) || 0;
+  const sub = parseFloat(document.getElementById('bSubmitted').value) || 0;
+  const v = sub - exp;
+  const el = document.getElementById('varianceDisplay');
+  el.textContent = v === 0 ? '✅ Balanced' : v > 0 ? `⬆ Surplus: UGX ${v.toLocaleString()}` : `⬇ Shortage: UGX ${Math.abs(v).toLocaleString()}`;
+  el.style.color = v === 0 ? 'var(--success)' : v > 0 ? 'var(--primary)' : 'var(--danger)';
+}
+</script>
+
+

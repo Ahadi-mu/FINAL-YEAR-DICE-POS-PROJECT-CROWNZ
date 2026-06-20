@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #41878b 0%, #288383 100%);
+      /* Flexbox centering — no sidebar conflict because this page has its own CSS */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .login-card {
+      background: #68ca99c5;
+      border-radius: 16px;
+      padding: 44px 48px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .login-logo i {
+      font-size: 54px;
+      color: #f0c040;
+    }
+    .login-logo h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-top: 12px;
+      letter-spacing: -0.3px;
+    }
+    .login-logo p {
+      color: #d5d8dd;
+      font-size: 13.5px;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 0 0 24px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 7px;
+    }
+    .form-group label i {
+      margin-right: 5px;
+      color: #6b7280;
+    }
+    .form-group input {
+      display: block;
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14.5px;
+      font-family: inherit;
+      color: #1f2937;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #1a56db;
+      box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
+    }
+    .form-group input::placeholder {
+      color: #9ca3af;
+    }
+
+    .btn-login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      width: 100%;
+      padding: 12px;
+      background: #0eb381;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 6px;
+    }
+    .btn-login:hover  { background: #1245a8; }
+    .btn-login:active { transform: scale(0.98); }
+
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    .alert i { margin-top: 1px; flex-shrink: 0; }
+    .alert-error   { background: #fde8e8; color: #c81e1e; border-left: 4px solid #e02424; }
+    .alert-success { background: #def7ec; color: #046245; border-left: 4px solid #057a55; }
+
+    .login-links {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .login-links a {
+      color: #1a56db;
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .login-links a:hover { text-decoration: underline; }
+
+    .login-copy {
+      text-align: center;
+      margin-top: 12px;
+      color: #e7eaee;
+      font-size: 11px;
+    }
+
+    @media (max-width: 480px) {
+      .login-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+
+      <div class="login-logo">
+        <i class="fas fa-store"></i>
+        <h1>Crown Stores</h1>
+        <p>Retail Management System</p>
+      </div>
+
+      <hr class="divider" />
+
+      <% if (error && error.length) { %>
+      <div class="alert alert-error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span><%= error[0] %></span>
+      </div>
+      <% } %>
+      <% if (success && success.length) { %>
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i>
+        <span><%= success[0] %></span>
+      </div>
+      <% } %>
+
+      <form action="/auth/login" method="POST" autocomplete="on">
+        <div class="form-group">
+          <label for="username">
+            <i class="fas fa-user"></i> Username
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Enter your username"
+            autocomplete="username"
+            required
+            autofocus
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">
+            <i class="fas fa-lock"></i> Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn-login">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+      </form>
+
+      <div class="login-links">
+        <a href="/auth/forgot-password">Forgot your password?</a>
+      </div>
+      <div class="login-copy">
+        Crown Stores &copy; <%= new Date().getFullYear().toString() %> &middot; CSRMS v1.0
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

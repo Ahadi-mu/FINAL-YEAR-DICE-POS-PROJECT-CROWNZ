@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-users"></i> User Management</h2>
+  <a href="/users/create" class="btn btn-primary"><i class="fas fa-plus"></i> Create User</a>
+</div>
+
+<form class="filters-bar" method="GET">
+  <div class="form-group">
+    <label>Role</label>
+    <select name="role">
+      <option value="">All Roles</option>
+      <option value="director" <%= filters.role === 'director' ? 'selected' : '' %>>Director</option>
+      <option value="manager" <%= filters.role === 'manager' ? 'selected' : '' %>>Manager</option>
+      <option value="sales_agent" <%= filters.role === 'sales_agent' ? 'selected' : '' %>>Sales Agent</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Branch</label>
+    <select name="branch_id">
+      <option value="">All Branches</option>
+      <% branches.forEach(b => { %><option value="<%= b.id %>" <%= filters.branch_id == b.id ? 'selected' : '' %>><%= b.branch_name %></option><% }) %>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Status</label>
+    <select name="status">
+      <option value="">All</option>
+      <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Active</option>
+      <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+  <a href="/users" class="btn btn-secondary">Clear</a>
+</form>
+
+<div class="card">
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead><tr><th>Full Name</th><th>Username</th><th>Email</th><th>Role</th><th>Branch</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+        <tbody>
+        <% users.forEach(u => { %>
+        <tr>
+          <td><strong><%= u.full_name %></strong></td>
+          <td><code><%= u.username %></code></td>
+          <td><%= u.email %></td>
+          <td><span class="badge role-badge role-<%= u.role %>"><%= u.role.replace('_',' ') %></span></td>
+          <td><%= u.branch_name || '—' %></td>
+          <td><span class="badge <%= u.status === 'active' ? 'badge-success' : 'badge-danger' %>"><%= u.status %></span></td>
+          <td class="text-muted"><%= u.last_login ? new Date(u.last_login).toLocaleString() : 'Never' %></td>
+          <td><a href="/users/edit/<%= u.id %>" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i> Edit</a></td>
+        </tr>
+        <% }) %>
+        <% if (!users.length) { %><tr><td colspan="8"><div class="empty-state"><i class="fas fa-users"></i><p>No users found</p></div></td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+
+</div>
+

@@ -1,0 +1,73 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-history"></i> Inventory Movement History</h2>
+  <a href="/inventory" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<form class="filters-bar" method="GET">
+  <div class="form-group">
+    <label>Product</label>
+    <select name="product_id">
+      <option value="">All Products</option>
+      <% products.forEach(p => { %>
+      <option value="<%= p.id %>" <%= filters.product_id == p.id ? 'selected' : '' %>><%= p.product_name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Type</label>
+    <select name="movement_type">
+      <option value="">All Types</option>
+      <option value="procurement" <%= filters.movement_type === 'procurement' ? 'selected' : '' %>>Procurement</option>
+      <option value="sale" <%= filters.movement_type === 'sale' ? 'selected' : '' %>>Sale</option>
+      <option value="adjustment" <%= filters.movement_type === 'adjustment' ? 'selected' : '' %>>Adjustment</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>From</label>
+    <input type="date" name="date_from" value="<%= filters.date_from || '' %>" />
+  </div>
+  <div class="form-group">
+    <label>To</label>
+    <input type="date" name="date_to" value="<%= filters.date_to || '' %>" />
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+  <a href="/inventory/movements" class="btn btn-secondary">Clear</a>
+</form>
+
+<div class="card">
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Product</th><th>Type</th><th>Change</th><th>Before</th><th>After</th><th>Notes</th><th>Recorded By</th></tr>
+        </thead>
+        <tbody>
+        <% movements.forEach(m => { %>
+        <tr>
+          <td class="text-muted" style="white-space:nowrap"><%= new Date(m.created_at).toLocaleString() %></td>
+          <td><strong><%= m.product_name %></strong></td>
+          <td>
+            <span class="badge <%= m.movement_type === 'procurement' ? 'badge-success' : m.movement_type === 'sale' ? 'badge-info' : 'badge-warning' %>">
+              <%= m.movement_type %>
+            </span>
+          </td>
+          <td class="<%= m.quantity_change > 0 ? 'text-success' : 'text-danger' %>">
+            <strong><%= m.quantity_change > 0 ? '+' : '' %><%= m.quantity_change %></strong>
+          </td>
+          <td><%= m.quantity_before %></td>
+          <td><strong><%= m.quantity_after %></strong></td>
+          <td class="text-muted"><%= m.notes || '—' %></td>
+          <td><%= m.recorded_by_name || '—' %></td>
+        </tr>
+        <% }) %>
+        <% if (!movements.length) { %><tr><td colspan="8"><div class="empty-state"><i class="fas fa-history"></i><p>No movement records found</p></div></td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

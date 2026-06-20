@@ -1,0 +1,56 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-clipboard-list"></i> Procurements</h2>
+  <a href="/procurement/create" class="btn btn-primary"><i class="fas fa-plus"></i> Record Procurement</a>
+</div>
+
+<form class="filters-bar" method="GET">
+  <div class="form-group">
+    <label>Supplier</label>
+    <select name="supplier_id">
+      <option value="">All Suppliers</option>
+      <% suppliers.forEach(s => { %>
+      <option value="<%= s.id %>" <%= filters.supplier_id == s.id ? 'selected' : '' %>><%= s.supplier_name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>From</label>
+    <input type="date" name="date_from" value="<%= filters.date_from || '' %>" />
+  </div>
+  <div class="form-group">
+    <label>To</label>
+    <input type="date" name="date_to" value="<%= filters.date_to || '' %>" />
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+  <a href="/procurement" class="btn btn-secondary">Clear</a>
+</form>
+
+<div class="card">
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Reference</th><th>Supplier</th><th>Date</th><th>Total Cost</th><th>Recorded By</th><th></th></tr>
+        </thead>
+        <tbody>
+        <% procurements.forEach(p => { %>
+        <tr>
+          <td><strong><%= p.reference_number || 'PRO-'+p.id %></strong></td>
+          <td><%= p.supplier_name || '—' %></td>
+          <td><%= new Date(p.procurement_date).toLocaleDateString() %></td>
+          <td>UGX <%= Number(p.total_cost).toLocaleString() %></td>
+          <td><%= p.recorded_by %></td>
+          <td><a href="/procurement/<%= p.id %>" class="btn btn-outline btn-sm"><i class="fas fa-eye"></i> View</a></td>
+        </tr>
+        <% }) %>
+        <% if (!procurements.length) { %><tr><td colspan="6"><div class="empty-state"><i class="fas fa-clipboard"></i><p>No procurements recorded yet</p></div></td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

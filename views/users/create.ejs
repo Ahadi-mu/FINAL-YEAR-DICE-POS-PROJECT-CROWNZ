@@ -1,0 +1,66 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-user-plus"></i> Create User</h2>
+  <a href="/users" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="card" style="max-width:600px">
+  <div class="card-body">
+    <form action="/users/create" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" name="full_name" required placeholder="e.g. John Mukasa" />
+        </div>
+        <div class="form-group">
+          <label>Username *</label>
+          <input type="text" name="username" required placeholder="e.g. jmukasa" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" name="email" required placeholder="user@crownstores.com" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Role *</label>
+          <select name="role" required onchange="toggleBranch(this.value)">
+            <option value="">-- Select Role --</option>
+            <option value="director">Director</option>
+            <option value="manager">Branch Manager</option>
+            <option value="sales_agent">Sales Agent</option>
+          </select>
+        </div>
+        <div class="form-group" id="branchDiv">
+          <label>Branch *</label>
+          <select name="branch_id" id="branchSel">
+            <option value="">-- Select Branch --</option>
+            <% branches.forEach(b => { %>
+            <option value="<%= b.id %>"><%= b.branch_name %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password *</label>
+        <input type="password" name="password" required minlength="6" placeholder="Min. 6 characters" />
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Create User</button>
+        <a href="/users" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+<script>
+function toggleBranch(role) {
+  document.getElementById('branchSel').required = role !== 'director';
+  document.getElementById('branchDiv').style.opacity = role === 'director' ? '0.4' : '1';
+}
+
+</script>
+
+

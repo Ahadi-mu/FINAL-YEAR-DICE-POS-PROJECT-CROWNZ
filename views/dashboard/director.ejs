@@ -1,0 +1,83 @@
+<%- include('../partials/header') %>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-building"></i></div>
+    <div><div class="stat-value"><%= stats.branchCount %></div><div class="stat-label">Active Branches</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-coins"></i></div>
+    <div><div class="stat-value">UGX <%= Number(stats.totalSales).toLocaleString() %></div><div class="stat-label">Total Sales</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon yellow"><i class="fas fa-warehouse"></i></div>
+    <div><div class="stat-value">UGX <%= Number(stats.inventoryValue).toLocaleString() %></div><div class="stat-label">Inventory Value</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon red"><i class="fas fa-clipboard-list"></i></div>
+    <div><div class="stat-value">UGX <%= Number(stats.procurementTotal).toLocaleString() %></div><div class="stat-label">Total Procurement</div></div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <!-- Branch Performance -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title"><i class="fas fa-chart-bar"></i> Branch Performance</span>
+      <a href="/reports/company" class="btn btn-outline btn-sm">Full Report</a>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>Branch</th><th>Sales (UGX)</th><th>Transactions</th></tr></thead>
+          <tbody>
+          <% branchPerformance.forEach((b, i) => { %>
+          <tr>
+            <td><strong>#<%= i+1 %></strong> <%= b.branch_name %></td>
+            <td><%= Number(b.total_sales).toLocaleString() %></td>
+            <td>—</td>
+          </tr>
+          <% }) %>
+          <% if (!branchPerformance.length) { %><tr><td colspan="3" class="text-muted" style="text-align:center;padding:20px">No data</td></tr><% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Products -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title"><i class="fas fa-trophy"></i> Top Selling Products</span>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>#</th><th>Product</th><th>Qty Sold</th><th>Revenue</th></tr></thead>
+          <tbody>
+          <% topProducts.forEach((p, i) => { %>
+          <tr>
+            <td><%= i+1 %></td>
+            <td><%= p.product_name %></td>
+            <td><%= Number(p.qty_sold).toLocaleString() %></td>
+            <td>UGX <%= Number(p.revenue).toLocaleString() %></td>
+          </tr>
+          <% }) %>
+          <% if (!topProducts.length) { %><tr><td colspan="4" class="text-muted" style="text-align:center;padding:20px">No sales yet</td></tr><% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+  <a href="/users" class="btn btn-primary"><i class="fas fa-users"></i> Manage Users </a>
+  <a href="/branches" class="btn btn-primary"><i class="fas fa-building"></i> Manage Branches</a>
+  <a href="/reports/company" class="btn btn-primary"><i class="fas fa-chart-pie"></i> Company Report</a>
+  <a href="/audit-logs" class="btn btn-primary"><i class="fas fa-shield-alt"></i> Audit Logs</a>
+  <a href="/maintenance" class="btn btn-primary"><i class="fas fa-cogs"></i> Maintenance</a>
+  <%- include('../partials/footer') %>
+</div>
+
+

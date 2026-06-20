@@ -1,0 +1,60 @@
+<%- include('../partials/header') %>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-coins"></i></div>
+    <div>
+      <div class="stat-value">UGX <%= Number(myDailySales.total).toLocaleString() %></div>
+      <div class="stat-label">My Sales Today</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-receipt"></i></div>
+    <div>
+      <div class="stat-value"><%= myDailySales.count %></div>
+      <div class="stat-label">Transactions Today</div>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <div class="card">
+    <div class="card-header"><span class="card-title"><i class="fas fa-bolt"></i> Quick Actions</span></div>
+    <div class="card-body">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <a href="/sales/pos" class="btn btn-primary" style="justify-content:center;padding:14px">
+          <i class="fas fa-cash-register"></i> Open Point of Sale
+        </a>
+        <a href="/sales/history" class="btn btn-outline" style="justify-content:center">
+          <i class="fas fa-history"></i> My Sales History
+        </a>
+        <a href="/bug-report" class="btn btn-secondary" style="justify-content:center">
+          <i class="fas fa-bug"></i> Report a Bug
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title"><i class="fas fa-history"></i> Recent Sales</span></div>
+    <div class="card-body" style="padding:0">
+      <table>
+        <thead><tr><th>Receipt</th><th>Amount</th><th>Time</th></tr></thead>
+        <tbody>
+        <% recentSales.forEach(s => { %>
+        <tr>
+          <td><a href="/sales/receipt/<%= s.id %>"><%= s.receipt_number %></a></td>
+          <td>UGX <%= Number(s.total_amount).toLocaleString() %></td>
+          <td><%= new Date(s.sale_date).toLocaleTimeString() %></td>
+        </tr>
+        <% }) %>
+        <% if (!recentSales.length) { %><tr><td colspan="3" class="text-muted" style="text-align:center;padding:20px">No sales yet today</td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+
+

@@ -1,0 +1,65 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-sliders-h"></i> Stock Adjustment</h2>
+  <a href="/inventory" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="card" style="max-width:500px">
+  <div class="card-header">
+    <span class="card-title"><%= product.product_name %></span>
+    <span class="badge badge-info">Current Stock: <%= product.quantity_available || 0 %></span>
+  </div>
+  <div class="card-body">
+    <form action="/inventory/adjust/<%= product.id %>" method="POST">
+      <div class="form-group">
+        <label>Adjustment Quantity *</label>
+        <input type="number" name="adjustment_quantity" required placeholder="e.g. +50 or -10" />
+        <small class="text-muted">Use positive (+) to increase, negative (-) to decrease</small>
+      </div>
+      <div class="form-group">
+        <label>Reason for Adjustment *</label>
+        <select name="reason" onchange="toggleCustomReason(this.value)" required>
+          <option value="">-- Select Reason --</option>
+          <option value="Damaged Products">Damaged Products</option>
+          <option value="Expired Products">Expired Products</option>
+          <option value="Stock Count Correction">Stock Count Correction</option>
+          <option value="Returned Goods">Returned Goods</option>
+          <option value="Opening Stock">Opening Stock</option>
+          <option value="Other">Other (specify below)</option>
+        </select>
+      </div>
+      <div class="form-group" id="customReasonDiv" style="display:none">
+        <label>Specify Reason</label>
+        <textarea name="custom_reason" rows="2" placeholder="Describe the reason..."></textarea>
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-warning" onclick="return confirmAdjustment()">
+          <i class="fas fa-check"></i> Apply Adjustment
+        </button>
+        <a href="/inventory" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+<script>
+function toggleCustomReason(val) {
+  document.getElementById('customReasonDiv').style.display = val === 'Other' ? 'block' : 'none';
+}
+function confirmAdjustment() {
+  const qty = document.querySelector('[name="adjustment_quantity"]').value;
+  return confirm(`Apply adjustment of ${qty} units?\nThis will be recorded in the audit log.`);
+}
+// Merge custom reason into reason field on submit
+document.querySelector('form').addEventListener('submit', function(e) {
+  const reasonSel = this.querySelector('[name="reason"]');
+  const custom = this.querySelector('[name="custom_reason"]');
+  if (reasonSel.value === 'Other' && custom.value.trim()) {
+    reasonSel.value = custom.value.trim();
+  }
+});
+</script>
+
+

@@ -1,0 +1,53 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-chart-pie"></i> Inventory Report</h2>
+  <a href="/reports/export/inventory-excel" class="btn btn-success"><i class="fas fa-file-excel"></i> Export Excel</a>
+</div>
+
+<% if (user.role === 'director' && branches.length) { %>
+<form class="filters-bar" method="GET">
+  <div class="form-group">
+    <label>Branch</label>
+    <select name="branch_id">
+      <option value="">All Branches</option>
+      <% branches.forEach(b => { %><option value="<%= b.id %>" <%= filters.branch_id == b.id ? 'selected' : '' %>><%= b.branch_name %></option><% }) %>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Load</button>
+</form>
+<% } %>
+
+<div class="card">
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Product</th><th>Category</th><th>Qty Available</th><th>Reorder Level</th><th>Cost Price</th><th>Selling Price</th><th>Inventory Value</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+        <% products.forEach(p => { %>
+        <tr style="<%= p.stock_status === 'Out of Stock' ? 'background:#fef2f2' : p.stock_status === 'Low Stock' ? 'background:#fffbeb' : '' %>">
+          <td><strong><%= p.product_name %></strong></td>
+          <td><%= p.category_name %></td>
+          <td><%= p.quantity_available || 0 %></td>
+          <td><%= p.reorder_level %></td>
+          <td>UGX <%= Number(p.cost_price).toLocaleString() %></td>
+          <td>UGX <%= Number(p.selling_price).toLocaleString() %></td>
+          <td>UGX <%= Number(p.inventory_value || 0).toLocaleString() %></td>
+          <td>
+            <span class="badge <%= p.stock_status === 'Out of Stock' ? 'badge-danger' : p.stock_status === 'Low Stock' ? 'badge-warning' : 'badge-success' %>">
+              <%= p.stock_status %>
+            </span>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (!products.length) { %><tr><td colspan="8"><div class="empty-state"><i class="fas fa-warehouse"></i><p>No inventory data</p></div></td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

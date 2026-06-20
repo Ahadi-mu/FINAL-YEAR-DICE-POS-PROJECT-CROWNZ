@@ -1,0 +1,97 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-globe"></i> Company Performance Report</h2>
+  <span class="text-muted">Generated: <%= new Date().toLocaleString() %></span>
+</div>
+
+<!-- Summary Stats -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-coins"></i></div>
+    <div><div class="stat-value">UGX <%= Number(stats.total_sales).toLocaleString() %></div><div class="stat-label">Total Sales (All Time)</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon yellow"><i class="fas fa-warehouse"></i></div>
+    <div><div class="stat-value">UGX <%= Number(stats.inventory_value).toLocaleString() %></div><div class="stat-label">Total Inventory Value</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon red"><i class="fas fa-clipboard-list"></i></div>
+    <div><div class="stat-value">UGX <%= Number(stats.total_procurement).toLocaleString() %></div><div class="stat-label">Total Procurement</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+    <div>
+      <div class="stat-value">UGX <%= Number(stats.total_sales - stats.total_procurement).toLocaleString() %></div>
+      <div class="stat-label">Gross Margin</div>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <!-- Branch Performance -->
+  <div class="card">
+    <div class="card-header"><span class="card-title"><i class="fas fa-building"></i> Branch Performance Ranking</span></div>
+    <div class="card-body" style="padding:0">
+      <table>
+        <thead><tr><th>#</th><th>Branch</th><th>Total Sales</th><th>Transactions</th></tr></thead>
+        <tbody>
+        <% branchPerf.forEach((b, i) => { %>
+        <tr>
+          <td>
+            <% if (i === 0) { %><span style="font-size:18px">🥇</span>
+            <% } else if (i === 1) { %><span style="font-size:18px">🥈</span>
+            <% } else if (i === 2) { %><span style="font-size:18px">🥉</span>
+            <% } else { %><%= i+1 %><% } %>
+          </td>
+          <td><%= b.branch_name %></td>
+          <td>UGX <%= Number(b.total_sales).toLocaleString() %></td>
+          <td><%= b.sale_count %></td>
+        </tr>
+        <% }) %>
+        <% if (!branchPerf.length) { %><tr><td colspan="4" class="text-muted" style="text-align:center;padding:20px">No data</td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Top Categories -->
+  <div class="card">
+    <div class="card-header"><span class="card-title"><i class="fas fa-trophy"></i> Top Categories</span></div>
+    <div class="card-body" style="padding:0">
+      <table>
+        <thead><tr><th>Category</th><th>Revenue</th></tr></thead>
+        <tbody>
+        <% topCategories.forEach(c => { %>
+        <tr><td><%= c.category_name %></td><td>UGX <%= Number(c.revenue).toLocaleString() %></td></tr>
+        <% }) %>
+        <% if (!topCategories.length) { %><tr><td colspan="2" class="text-muted" style="text-align:center;padding:20px">No sales data</td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Top Products -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><span class="card-title"><i class="fas fa-star"></i> Top 10 Selling Products</span></div>
+  <div class="card-body" style="padding:0">
+    <table>
+      <thead><tr><th>#</th><th>Product</th><th>Qty Sold</th><th>Revenue</th></tr></thead>
+      <tbody>
+      <% topProducts.forEach((p, i) => { %>
+      <tr>
+        <td><%= i+1 %></td>
+        <td><strong><%= p.product_name %></strong></td>
+        <td><%= Number(p.qty_sold).toLocaleString() %></td>
+        <td>UGX <%= Number(p.revenue).toLocaleString() %></td>
+      </tr>
+      <% }) %>
+      <% if (!topProducts.length) { %><tr><td colspan="4" class="text-muted" style="text-align:center;padding:20px">No sales data</td></tr><% } %>
+      </tbody>
+    </table>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

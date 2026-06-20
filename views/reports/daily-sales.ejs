@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-chart-bar"></i> Daily Sales Report</h2>
+  <div class="btn-group">
+    <a href="/reports/export/sales-pdf?date=<%= filters.date %>" class="btn btn-danger btn-sm">
+      <i class="fas fa-file-pdf"></i> Export PDF
+    </a>
+  </div>
+</div>
+
+<form class="filters-bar" method="GET">
+  <div class="form-group">
+    <label>Date</label>
+    <input type="date" name="date" value="<%= filters.date %>" />
+  </div>
+  <% if (user.role === 'director' && branches.length) { %>
+  <div class="form-group">
+    <label>Branch</label>
+    <select name="branch_id">
+      <option value="">All Branches</option>
+      <% branches.forEach(b => { %><option value="<%= b.id %>" <%= filters.branch_id == b.id ? 'selected' : '' %>><%= b.branch_name %></option><% }) %>
+    </select>
+  </div>
+  <% } %>
+  <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Load</button>
+</form>
+
+<div class="stats-grid" style="grid-template-columns:repeat(2,1fr)">
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-receipt"></i></div>
+    <div><div class="stat-value"><%= summary.count %></div><div class="stat-label">Transactions</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-coins"></i></div>
+    <div><div class="stat-value">UGX <%= Number(summary.total).toLocaleString() %></div><div class="stat-label">Total Revenue</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead><tr><th>Receipt #</th><th>Agent</th><th>Items</th><th>Total</th><th>Time</th></tr></thead>
+        <tbody>
+        <% sales.forEach(s => { %>
+        <tr>
+          <td><%= s.receipt_number %></td>
+          <td><%= s.agent_name %></td>
+          <td><%= s.items || '—' %></td>
+          <td>UGX <%= Number(s.total_amount).toLocaleString() %></td>
+          <td><%= new Date(s.sale_date).toLocaleTimeString() %></td>
+        </tr>
+        <% }) %>
+        <% if (!sales.length) { %><tr><td colspan="5"><div class="empty-state"><i class="fas fa-receipt"></i><p>No sales on this date</p></div></td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

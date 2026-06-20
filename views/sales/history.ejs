@@ -1,0 +1,60 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h2><i class="fas fa-history"></i> Sales History</h2>
+  <% if (user.role !== 'sales_agent') { %>
+  <div class="btn-group">
+    <a href="/reports/export/sales-pdf?date=<%= new Date().toISOString().split('T')[0] %>" class="btn btn-danger btn-sm">
+      <i class="fas fa-file-pdf"></i> Export PDF
+    </a>
+  </div>
+  <% } %>
+</div>
+
+<form class="filters-bar" method="GET">
+  <div class="form-group">
+    <label>From</label>
+    <input type="date" name="date_from" value="<%= filters.date_from || '' %>" />
+  </div>
+  <div class="form-group">
+    <label>To</label>
+    <input type="date" name="date_to" value="<%= filters.date_to || '' %>" />
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+  <a href="/sales/history" class="btn btn-secondary">Clear</a>
+</form>
+
+<div class="card">
+  <div class="card-body" style="padding:0">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Receipt #</th><th>Agent</th><% if (user.role !== 'sales_agent') { %><th>Branch</th><% } %><th>Items</th><th>Total</th><th>Paid</th><th>Change</th><th>Date & Time</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+        <% sales.forEach(s => { %>
+        <tr>
+          <td style="font-weight:600"><%= s.receipt_number %></td>
+          <td><%= s.agent_name %></td>
+          <% if (user.role !== 'sales_agent') { %><td><%= s.branch_name %></td><% } %>
+          <td><%= s.item_count %></td>
+          <td>UGX <%= Number(s.total_amount).toLocaleString() %></td>
+          <td>UGX <%= Number(s.amount_paid).toLocaleString() %></td>
+          <td>UGX <%= Number(s.change_given).toLocaleString() %></td>
+          <td><%= new Date(s.sale_date).toLocaleString() %></td>
+          <td><span class="badge <%= s.status === 'completed' ? 'badge-success' : 'badge-danger' %>"><%= s.status %></span></td>
+          <td>
+            <a href="/sales/receipt/<%= s.id %>" class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></a>
+            <a href="/sales/receipt/<%= s.id %>/pdf" class="btn btn-danger btn-sm"><i class="fas fa-download"></i></a>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (!sales.length) { %><tr><td colspan="10"><div class="empty-state"><i class="fas fa-receipt"></i><p>No sales found</p></div></td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+
